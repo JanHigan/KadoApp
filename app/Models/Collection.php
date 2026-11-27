@@ -11,6 +11,6 @@ class Collection extends Model
 
     public function cards(): HasMany
     {
-        return $this->hasMany(Collection::class);
+        return $this->hasMany(Card::class);
     }
 }
