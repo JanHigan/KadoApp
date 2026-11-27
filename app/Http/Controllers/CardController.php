@@ -17,7 +17,12 @@ class CardController extends Controller
     public function store(Request $request, Collection $collection)
     {
         $validated = $request->validate([
-            'question' => 'required|string|max:255|unique:cards,question',
+            'question' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('cards', 'question')->where('collection_id', $collection->id),
+            ],
             'answer' => 'required|string|max:255',
         ]);
 
@@ -40,7 +45,9 @@ class CardController extends Controller
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('cards', 'question')->ignore($card->id),
+                Rule::unique('cards', 'question')
+                    ->where('collection_id', $collection->id)
+                    ->ignore($card->id),
             ],
             'answer' => 'required|string|max:255',
         ]);

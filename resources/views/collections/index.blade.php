@@ -15,7 +15,9 @@
         <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">My collections</h1>
         <p class="mt-2 text-ink-soft">Select a collection to review flashcards or add new ones.</p>
     </div>
-    <a href="#" class="rounded-lg border border-line px-4 py-2 text-sm font-medium transition hover:border-shu hover:text-shu">Import from JSON</a>
+    <a href="{{ route('collections.import') }}" class="rounded-lg border border-line px-4 py-2 text-sm font-medium transition hover:border-shu hover:text-shu">
+        Import from JSON
+    </a>
 </div>
 
 @if ($collections->isNotEmpty())

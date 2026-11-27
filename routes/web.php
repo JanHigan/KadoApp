@@ -9,6 +9,13 @@ Route::get('/', function () {
     return redirect()->route('collections.index');
 });
 
+// Collections import
+Route::get('/collections/import', [CollectionController::class, 'importForm'])->name('collections.import');
+Route::post('/collections/import', [CollectionController::class, 'importStore'])->name('collections.import.store');
+
+// Collections Export
+Route::get('/collections/{collection}/export', [CollectionController::class, 'export'])->name('collections.export');
+
 // Collections
 Route::get('/collections', [CollectionController::class, 'index'])->name('collections.index');
 Route::get('/collections/create', [CollectionController::class, 'create'])->name('collections.create');

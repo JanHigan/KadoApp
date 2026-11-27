@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class CollectionController extends Controller
 {
@@ -86,5 +88,79 @@ class CollectionController extends Controller
         return redirect()
             ->route('collections.index')
             ->with('success', "Collection «{$name}» deleted.");
+    }
+
+    public function importForm()
+    {
+        return view('collections.import');
+    }
+
+    public function importStore(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:json,txt|max:2048',
+        ]);
+
+        $raw = file_get_contents($request->file('file')->getRealPath());
+        $data = json_decode($raw, true);
+
+        if (!is_array($data) || empty($data['name']) || !isset($data['cards']) || !is_array($data['cards'])) {
+            return back()->withErrors([
+                'file' => 'Invalid JSON structure. Expected "name" and "cards" array.',
+            ]);
+        }
+
+        $name = Str::limit(trim($data['name']), 90, '');
+        if (Collection::where('name', $name)->exists()) {
+            $name .= ' (' . now()->format('H:i:s') . ')';
+        }
+
+        $collection = DB::transaction(function () use ($data, $name) {
+            $collection = Collection::create([
+                'name' => $name,
+                'description' => isset($data['description']) ? Str::limit($data['description'], 255, '') : null,
+            ]);
+
+            foreach ($data['cards'] as $item) {
+                if (!empty($item['question']) && !empty($item['answer'])) {
+                    $question = Str::limit(trim($item['question']), 255, '');
+
+                    if (!$collection->cards()->where('question', $question)->exists()) {
+                        $collection->cards()->create([
+                            'question' => $question,
+                            'answer' => Str::limit(trim($item['answer']), 255, ''),
+                        ]);
+                    }
+                }
+            }
+
+            return $collection;
+        });
+
+        return redirect()
+            ->route('collections.show', $collection)
+            ->with('success', "Collection «{$collection->name}» imported ({$collection->cards()->count()} cards)!");
+    }
+
+    public function export(Collection $collection)
+    {
+        $collection->load('cards');
+
+        $data = [
+            'name' => $collection->name,
+            'description' => $collection->description,
+            'cards' => $collection->cards->map(fn ($card) => [
+                'question' => $card->question,
+                'answer' => $card->answer,
+            ])->values()->all(),
+        ];
+
+        $filename = Str::slug($collection->name ?: 'collection') . '.json';
+
+        return response()->streamDownload(function () use ($data) {
+            echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        }, $filename, [
+            'Content-Type' => 'application/json',
+        ]);
     }
 }

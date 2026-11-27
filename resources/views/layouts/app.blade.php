@@ -22,7 +22,7 @@
                 <span class="text-xl font-bold tracking-tight">Kado<span class="text-shu">App</span></span>
             </a>
             <nav class="flex items-center gap-2">
-                <a href="#" class="hidden rounded-lg px-3 py-2 text-sm font-medium text-ink-soft hover:bg-paper hover:text-ink sm:block">Import</a>
+                <a href="{{ route('collections.import') }}" class="hidden rounded-lg px-3 py-2 text-sm font-medium text-ink-soft hover:bg-paper hover:text-ink sm:block">Import</a>
                 <a href="{{ route('collections.create') }}" class="rounded-lg bg-shu px-4 py-2 text-sm font-semibold text-white transition hover:bg-shu-dark">New collection</a>
             </nav>
         </div>

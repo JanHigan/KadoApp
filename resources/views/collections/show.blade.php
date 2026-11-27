@@ -38,7 +38,9 @@
 
 <div class="mt-6 flex flex-wrap gap-2 border-y border-line py-3 text-sm">
     <a href="{{ route('collections.edit', $collection) }}" class="rounded-lg px-3 py-1.5 font-medium hover:bg-paper">Edit</a>
-    <a href="#" class="rounded-lg px-3 py-1.5 font-medium hover:bg-paper">Export to JSON</a>
+    <a href="{{ route('collections.export', $collection) }}" class="rounded-lg px-3 py-1.5 font-medium hover:bg-paper">
+        Export to JSON
+    </a>
     <form method="POST" action="{{ route('collections.destroy', $collection) }}" onsubmit="return confirm('Delete collection with all cards?')" class="ml-auto">
         @csrf @method('DELETE')
         <button class="rounded-lg px-3 py-1.5 font-medium text-shu hover:bg-shu-soft">Delete collection</button>
