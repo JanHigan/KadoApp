@@ -21,15 +21,23 @@
 @if ($collections->isNotEmpty())
     <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         @foreach ($collections as $collection)
+            @php
+                $total = $collection->cards_count;
+                $learned = $collection->learned_cards_count;
+                $percent = $total > 0 ? round(($learned / $total) * 100) : 0;
+            @endphp
+
             <a href="{{ route('collections.show', $collection) }}" class="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-white p-5 transition hover:border-shu/40 hover:shadow-lg hover:shadow-shu/5">
                 <span class="absolute inset-y-0 left-0 w-1 bg-shu opacity-0 transition group-hover:opacity-100"></span>
                 <h2 class="text-lg font-semibold leading-snug">{{ $collection->name }}</h2>
                 <p class="mt-1.5 line-clamp-2 min-h-10 text-sm text-ink-soft">{{ $collection->description ?? 'Without description' }}</p>
+
                 <div class="mt-5 flex items-center justify-between text-sm">
-                    <span class="font-medium">{{ $collection->cards_count ?? $collection->cards->count() }} cards</span>
+                    <span class="font-medium">{{ $total }} cards</span>
+                    <span class="text-ink-soft">{{ $percent }}%</span>
                 </div>
                 <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-paper">
-                    <div class="h-full rounded-full bg-shu"></div>
+                    <div class="h-full rounded-full bg-shu transition-all duration-300" style="width: {{ $percent }}%"></div>
                 </div>
             </a>
         @endforeach
@@ -38,6 +46,10 @@
             <span class="text-3xl leading-none">+</span>
             <span class="text-sm font-medium">Create collection</span>
         </a>
+    </div>
+
+    <div class="mt-8">
+        {{ $collections->links() }}
     </div>
 @else
     <div class="mt-12 rounded-3xl bg-paper px-6 py-14 text-center">

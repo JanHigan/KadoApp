@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\CollectionController;
+use App\Http\Controllers\LearnController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,3 +24,8 @@ Route::post('/collections/{collection}/cards/store', [CardController::class, 'st
 Route::get('/collections/{collection}/cards/{card}/edit', [CardController::class, 'edit'])->name('collections.cards.edit');
 Route::put('/collections/{collection}/cards/{card}/update', [CardController::class, 'update'])->name('collections.cards.update');
 Route::delete('/collections/{collection}/cards/{card}/destroy', [CardController::class, 'destroy'])->name('collections.cards.destroy');
+
+// Learn
+Route::get('/collections/{collection}/learn', [LearnController::class, 'show'])->name('collections.learn');
+Route::post('/collections/{collection}/cards/{card}/review', [LearnController::class, 'review'])->name('collections.cards.review');
+Route::post('/collections/{collection}/learn/reset', [LearnController::class, 'reset'])->name('collections.learn.reset');

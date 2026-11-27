@@ -20,11 +20,17 @@
             <p class="mt-2 text-ink-soft">{{ $collection->description }}</p>
         @endif
 
-        <p class="mt-3 text-sm font-medium">{{ $collection->cards->count() }} cards</p>
+        @php
+            $percent = $totalCards > 0 ? round(($learnedCount / $totalCards) * 100) : 0;
+        @endphp
+
+        <p class="mt-3 text-sm font-medium">
+            {{ $totalCards }} cards, learned {{ $learnedCount }} ({{ $percent }}%)
+        </p>
     </div>
 
-    @if ($collection->cards->isNotEmpty())
-        <a href="#" class="inline-flex items-center rounded-xl bg-shu px-6 py-3 font-semibold text-white shadow-lg shadow-shu/20 transition hover:bg-shu-dark">
+    @if ($totalCards > 0)
+        <a href="{{ route('collections.learn', $collection) }}" class="inline-flex items-center rounded-xl bg-shu px-6 py-3 font-semibold text-white shadow-lg shadow-shu/20 transition hover:bg-shu-dark">
             Start learning
         </a>
     @endif
@@ -44,9 +50,9 @@
     <a href="{{ route('collections.cards.create', $collection) }}" class="rounded-lg border border-line px-4 py-2 text-sm font-medium transition hover:border-shu hover:text-shu">+ Add card</a>
 </div>
 
-@if ($collection->cards->isNotEmpty())
+@if ($cards->isNotEmpty())
     <ul class="mt-4 divide-y divide-line overflow-hidden rounded-2xl border border-line">
-        @foreach ($collection->cards as $card)
+        @foreach ($cards as $card)
         <li class="flex items-start gap-4 bg-white p-4 transition hover:bg-paper sm:items-center sm:p-5">
             <div class="grid min-w-0 flex-1 gap-1 sm:grid-cols-2 sm:gap-6">
                 <p class="font-semibold">{{ $card->question }}</p>
@@ -63,6 +69,10 @@
         </li>
         @endforeach
     </ul>
+
+    <div class="mt-6">
+        {{ $cards->links() }}
+    </div>
 @else
     <div class="mt-4 rounded-2xl bg-paper px-6 py-12 text-center">
         <h3 class="text-lg font-semibold">There are no cards in the collection yet.</h3>

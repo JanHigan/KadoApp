@@ -10,7 +10,10 @@ class CollectionController extends Controller
 {
     public function index()
     {
-        $collections = Collection::withCount('cards')->latest()->get();
+        $collections = Collection::withCount([
+            'cards',
+            'cards as learned_cards_count' => fn ($q) => $q->whereHas('reviews', fn ($r) => $r->where('result', true)),
+        ])->latest()->paginate(8);
 
         return view('collections.index', compact('collections'));
     }
@@ -35,9 +38,20 @@ class CollectionController extends Controller
 
     public function show(Collection $collection)
     {
-        $collection->load('cards');
+        $totalCards = $collection->cards()->count();
 
-        return view('collections.show', compact('collection'));
+        $learnedCount = $collection->cards()
+            ->whereHas('reviews', fn ($q) => $q->where('result', true))
+            ->count();
+
+        $cards = $collection->cards()->latest()->paginate(15);
+
+        return view('collections.show', compact(
+            'collection',
+            'cards',
+            'totalCards',
+            'learnedCount'
+        ));
     }
 
     public function edit(Collection $collection)
