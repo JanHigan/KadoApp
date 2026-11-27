@@ -4,6 +4,15 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: "Onest", ui-sans-serif, system-ui, sans-serif;
+
+    --color-shu: #D7351F;
+    --color-shu-dark: #B52A17;
+    --color-shu-soft: #FDF0ED;
+    --color-ink: #2A2623;
+    --color-ink-soft: #6B6560;
+    --color-paper: #FAF9F7;
+    --color-line: #E9E6E1;
+    --color-moss: #3F7D58;
+    --color-moss-soft: #EDF5F0;
 }
