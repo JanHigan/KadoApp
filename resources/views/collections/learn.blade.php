@@ -18,24 +18,20 @@
             $percent = $totalCards > 0 ? round(($learned / $totalCards) * 100) : 0;
         @endphp
 
-        {{-- Прогресс-бар --}}
         <div class="mt-3 h-2 overflow-hidden rounded-full bg-paper">
             <div class="h-full rounded-full bg-shu transition-all duration-300" style="width: {{ $percent }}%"></div>
         </div>
 
-        {{-- Карточка --}}
         <div class="mt-8 rounded-3xl border border-line bg-white p-8 shadow-sm sm:p-10">
             <span class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Question</span>
             <p class="mt-3 text-2xl font-bold leading-snug">{{ $card->question }}</p>
 
-            {{-- Блок ответа (изначально скрыт) --}}
             <div id="answer-box" class="mt-8 hidden border-t border-line pt-6">
                 <span class="text-xs font-semibold uppercase tracking-wider text-ink-soft">Answer</span>
                 <p class="mt-2 text-xl text-ink-soft">{{ $card->answer }}</p>
             </div>
         </div>
 
-        {{-- Кнопка показа ответа --}}
         <div id="show-btn-box" class="mt-6">
             <button type="button" onclick="revealAnswer()"
                     class="w-full rounded-xl bg-shu py-3.5 font-semibold text-white shadow-lg shadow-shu/20 transition hover:bg-shu-dark">
@@ -43,7 +39,6 @@
             </button>
         </div>
 
-        {{-- Кнопки оценки (появляются после открытия ответа) --}}
         <div id="rate-btns-box" class="mt-6 hidden grid-cols-2 gap-3">
             <form method="POST" action="{{ route('collections.cards.review', [$collection, $card]) }}">
                 @csrf
@@ -72,7 +67,6 @@
             }
         </script>
     @else
-        {{-- Экран завершения --}}
         <div class="mt-10 rounded-3xl bg-paper px-6 py-14 text-center">
             @include('partials.logo', ['size' => 'mx-auto h-16 w-16'])
             <h1 class="mt-5 text-2xl font-bold">All cards learned!</h1>
