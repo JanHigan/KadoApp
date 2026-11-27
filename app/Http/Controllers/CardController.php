@@ -3,63 +3,61 @@
 namespace App\Http\Controllers;
 
 use App\Models\Card;
+use App\Models\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CardController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function create(Collection $collection)
     {
-        //
+        return view('cards.create', compact('collection'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(Request $request, Collection $collection)
     {
-        //
+        $validated = $request->validate([
+            'question' => 'required|string|max:255|unique:cards,question',
+            'answer' => 'required|string|max:255',
+        ]);
+
+        $collection->cards()->create($validated);
+
+        return redirect()
+            ->route('collections.show', $collection)
+            ->with('success', 'Card added successfully!');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function edit(Collection $collection, Card $card)
     {
-        //
+        return view('cards.edit', compact('collection', 'card'));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Card $card)
+    public function update(Request $request, Collection $collection, Card $card)
     {
-        //
+        $validated = $request->validate([
+            'question' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('cards', 'question')->ignore($card->id),
+            ],
+            'answer' => 'required|string|max:255',
+        ]);
+
+        $card->update($validated);
+
+        return redirect()
+            ->route('collections.show', $collection)
+            ->with('success', 'Card updated successfully!');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Card $card)
+    public function destroy(Collection $collection, Card $card)
     {
-        //
-    }
+        $card->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Card $card)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Card $card)
-    {
-        //
+        return redirect()
+            ->route('collections.show', $collection)
+            ->with('success', 'Card deleted.');
     }
 }

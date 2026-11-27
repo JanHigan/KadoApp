@@ -4,60 +4,73 @@ namespace App\Http\Controllers;
 
 use App\Models\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CollectionController extends Controller
 {
     public function index()
     {
-        $collections = Collection::all();
+        $collections = Collection::withCount('cards')->latest()->get();
+
         return view('collections.index', compact('collections'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('collections.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:100|unique:collections,name',
+            'description' => 'nullable|string|max:255'
+        ]);
+
+        $collection = Collection::create($validated);
+
+        return redirect()
+            ->route('collections.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Collection $collection)
     {
-        //
+        $collection->load('cards');
+
+        return view('collections.show', compact('collection'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Collection $collection)
     {
-        //
+        return view('collections.edit', compact('collection'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Collection $collection)
     {
-        //
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('collections', 'name')->ignore($collection->id),
+            ],
+            'description' => 'nullable|string|max:255',
+        ]);
+
+        $collection->update($validated);
+
+        return redirect()
+            ->route('collections.show', $collection)
+            ->with('success', 'Collection updated!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Collection $collection)
     {
-        //
+        $name = $collection->name;
+        $collection->delete();
+
+        return redirect()
+            ->route('collections.index')
+            ->with('success', "Collection «{$name}» deleted.");
     }
 }
